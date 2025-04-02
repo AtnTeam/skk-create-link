@@ -159,7 +159,6 @@
     }
 
     @media (max-width: 600px) {
-
       input,
       select,
       .btn {
@@ -170,6 +169,35 @@
         flex-direction: column;
         align-items: stretch;
       }
+    }
+
+    
+.pwa-container {margin-top: 30px;}
+
+    /* Стилізація заголовка PWA */
+    .pwa-header {
+      background-color: #d4edda;
+      border: 2px solid #28a745;
+      border-radius: 8px;
+      padding: 10px;
+      color: #155724;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    /* Стилізація інформаційного повідомлення для PWA */
+    .pwa-info {
+      font-size: 0.95rem;
+      /* color: #28a745; */
+      margin-bottom: 15px;
+
+    }
+
+    /* Стилізація зображення */
+    .pwa-image {
+      max-width: 100%;
+      border-radius: 4px;
+      margin-bottom: 15px;
     }
   </style>
 </head>
@@ -186,17 +214,13 @@
         <span>Показати інструкцію</span>
       </div>
       <div class="instruction-content" id="instructionContentLink">
-        <!-- Замість цього URL вставте посилання на потрібне зображення -->
         <img src="images/1.png" alt="Інструкція для Link from Keitaro" style="max-width:100%; border-radius: 4px;">
       </div>
     </div>
     <div class="field">
       <label for="linkInput">Link from Keitaro:</label>
-
       <input type="text" id="linkInput" placeholder="Вставте посилання з параметрами">
     </div>
-
-
 
     <div class="field">
       <label for="teamSelect">Команда:</label>
@@ -238,15 +262,7 @@
       <input type="text" id="sub6">
     </div>
 
-    <div class="field">
-      <label for="pixel">pixel: <small>(обов’язково)</small></label>
-      <input type="text" id="pixel" class="required-field">
-    </div>
-
-    <div class="field">
-      <label for="appBundle">ID SKAK APP:</label>
-      <input type="text" id="appBundle">
-    </div>
+    <!-- Видалені поля: pixel та ID SKAK APP -->
 
     <!-- Результати налаштувань -->
     <div class="result-container">
@@ -259,7 +275,6 @@
           <span>Показати інструкцію</span>
         </div>
         <div class="instruction-content" id="instructionContent">
-          <!-- Замість цього URL вставте посилання на потрібне зображення -->
           <img src="images/2.png" alt="Інструкція" style="max-width:100%; border-radius: 4px;">
         </div>
       </div>
@@ -281,26 +296,42 @@
 
       <iframe id="previewFrame" src=""></iframe>
     </div>
+
+    <!-- Новий блок для PWA -->
+    <div class="pwa-container">
+      <h3 class="pwa-header">⚠️ Після того, як SKAK видасть домен PWA</h3>
+      <p class="pwa-info">
+        до домена потрібно додати "хвіст" <i> <b>utm_source={{placement}}&utm_medium={{campaign.id}}&utm_campaign={{ad.id}}&utm_content={{ad.name}}</b></i> – це потрібно для того, щоб в колонках Кейтаро відображались дані (назви колонок як на фото) ⬇️:
+      </p>
+      <img class="pwa-image" src="images/kt.png" alt="Фото колонок Кейтаро">
+      <div class="field">
+        <label for="pwaDomainInput">Домен PWA (повинен містити <strong>https://</strong>):</label>
+        <input type="text" id="pwaDomainInput" placeholder="https://example.com">
+      </div>
+      <div class="field">
+        <strong>PWA URL:</strong>
+        <div class="copy-group">
+          <div class="result" id="resultPwa"></div>
+          <button class="btn" id="copyPwaBtn" onclick="copyPwa()">Копіювати</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
     // Масиви даних
     const teams = [{ name: "NDA" }];
     const bayers = [
-      { name: "ira", marker: "ira" },
       { name: "dmt", marker: "dmt" },
       { name: "chpa", marker: "chpa" },
       { name: "prm", marker: "prm" },
       { name: "ily", marker: "ily" },
       { name: "kla", marker: "kla" },
-      { name: "zhe", marker: "zhe" },
       { name: "van", marker: "van" },
       { name: "rstk", marker: "rstk" },
-      { name: "cdk28", marker: "cdk28" },
       { name: "nat29", marker: "nat29" },
       { name: "alx30", marker: "alx30" },
       { name: "yrv31", marker: "yrv31" },
-      { name: "olx32", marker: "olx32" }
     ];
 
     // Функція для заповнення select-елементів
@@ -325,13 +356,12 @@
 
     let templateLink = "";
 
-    // Валідація обов’язкових полів: Баєр, sub2, sub3 та pixel
+    // Валідація обов’язкових полів: Баєр, sub2 та sub3
     function validateRequiredFields() {
       const bayer = document.getElementById("bayerSelect").value.trim();
       const sub2 = document.getElementById("sub2").value.trim();
       const sub3 = document.getElementById("sub3").value.trim();
-      const pixel = document.getElementById("pixel").value.trim();
-      return bayer !== "" && sub2 !== "" && sub3 !== "" && pixel !== "";
+      return bayer !== "" && sub2 !== "" && sub3 !== "";
     }
 
     function updateCopyButtons() {
@@ -352,8 +382,6 @@
       const sub4 = document.getElementById("sub4").value;
       const sub5 = document.getElementById("sub5").value;
       const sub6 = document.getElementById("sub6").value;
-      const pixel = document.getElementById("pixel").value;
-      const appBundle = document.getElementById("appBundle").value;
 
       if (sub1.trim() !== "") {
         updatedLink = updatedLink.replace("{sn_sub1}", sub1);
@@ -373,12 +401,6 @@
       if (sub6.trim() !== "") {
         updatedLink = updatedLink.replace("{sn_sub6}", sub6);
       }
-      if (pixel.trim() !== "") {
-        updatedLink = updatedLink.replace("{sn_fbp}", pixel);
-      }
-      if (appBundle.trim() !== "") {
-        updatedLink = updatedLink.replace("{appBundle}", appBundle);
-      }
 
       document.getElementById("resultLink").textContent = updatedLink;
       updateCopyButtons();
@@ -394,9 +416,9 @@
       document.getElementById("naming").textContent = naming;
     }
 
-    // Оновлення стилів для required полів (включаючи sub2)
+    // Оновлення стилів для required полів (без pixel)
     function updateRequiredFieldStyles() {
-      const requiredIds = ["bayerSelect", "sub2", "sub3", "pixel"];
+      const requiredIds = ["bayerSelect", "sub2", "sub3"];
       requiredIds.forEach(id => {
         const field = document.getElementById(id);
         if (field.value.trim() !== "") {
@@ -408,7 +430,7 @@
     }
 
     // Слухачі для обов’язкових полів
-    ["bayerSelect", "sub2", "sub3", "pixel"].forEach(id => {
+    ["bayerSelect", "sub2", "sub3"].forEach(id => {
       document.getElementById(id).addEventListener("input", () => {
         updateRequiredFieldStyles();
         updateLink();
@@ -424,9 +446,6 @@
         if (id === "sub3") updateNaming();
       });
     });
-
-    document.getElementById("pixel").addEventListener("input", updateLink);
-    document.getElementById("appBundle").addEventListener("input", updateLink);
 
     document.getElementById("linkInput").addEventListener("input", function () {
       templateLink = this.value;
@@ -451,11 +470,10 @@
 
     document.getElementById("teamSelect").addEventListener("change", updateNaming);
     document.getElementById("sub3").addEventListener("input", updateCopyButtons);
-    document.getElementById("pixel").addEventListener("input", updateCopyButtons);
 
     function copyLink() {
       if (!validateRequiredFields()) {
-        alert("Будь ласка, заповніть обов'язкові поля: Баєр, sub2, sub3 та pixel.");
+        alert("Будь ласка, заповніть обов'язкові поля: Баєр, sub2 та sub3.");
         return;
       }
       const text = document.getElementById("resultLink").textContent;
@@ -468,7 +486,7 @@
 
     function copyNaming() {
       if (!validateRequiredFields()) {
-        alert("Будь ласка, заповніть обов'язкові поля: Баєр, sub2, sub3 та pixel.");
+        alert("Будь ласка, заповніть обов'язкові поля: Баєр, sub2 та sub3.");
         return;
       }
       const text = document.getElementById("naming").textContent;
@@ -482,7 +500,7 @@
     // Завантаження посилання в iframe при кліку на кнопку "Перевірити"
     function checkLink() {
       if (!validateRequiredFields()) {
-        alert("Будь ласка, заповніть обов'язкові поля: Баєр, sub2, sub3 та pixel.");
+        alert("Будь ласка, заповніть обов'язкові поля: Баєр, sub2 та sub3.");
         return;
       }
       const link = document.getElementById("resultLink").textContent;
@@ -518,6 +536,31 @@
         arrow.textContent = "➕";
       }
     }
+
+    // НОВА ЛОГІКА ДЛЯ PWA
+    function updatePwaLink() {
+      const domain = document.getElementById("pwaDomainInput").value.trim();
+      let pwaUrl = "";
+      if (domain.startsWith("https://")) {
+        pwaUrl = domain + "?utm_source={{placement}}&utm_medium={{campaign.id}}&utm_campaign={{ad.id}}&utm_content={{ad.name}}";
+      }
+      document.getElementById("resultPwa").textContent = pwaUrl;
+    }
+
+    function copyPwa() {
+      const pwaUrl = document.getElementById("resultPwa").textContent;
+      if (!pwaUrl) {
+        alert("Будь ласка, введіть коректний домен PWA, який починається з https://");
+        return;
+      }
+      navigator.clipboard.writeText(pwaUrl).then(() => {
+        alert("PWA URL скопійовано!");
+      }).catch(() => {
+        alert("Не вдалося скопіювати PWA URL.");
+      });
+    }
+
+    document.getElementById("pwaDomainInput").addEventListener("input", updatePwaLink);
 
     updateRequiredFieldStyles();
     updateCopyButtons();
